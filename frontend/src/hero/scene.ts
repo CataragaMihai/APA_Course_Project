@@ -54,9 +54,9 @@ export interface Scene {
   debug: Record<string, unknown>;
 }
 
-export async function createScene(canvas: HTMLCanvasElement, glbUrl: string, w: number, h: number): Promise<Scene> {
+export async function createScene(canvas: HTMLCanvasElement, glbUrl: string, w: number, h: number, onProgress?: (f: number | null) => void): Promise<Scene> {
   // start the downloads first (the GLB is usually already preloaded by index.html); the setup below overlaps them
-  const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(glbUrl);
+  const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(glbUrl, (e) => onProgress?.(e.lengthComputable ? e.loaded / e.total : null));
   const font = document.fonts.load('700 40px "Courier Prime"').catch(() => undefined);
   gltf.catch(() => undefined); // a failure is rethrown where it is awaited below, not reported twice
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });

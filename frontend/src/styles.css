@@ -79,7 +79,7 @@
   --on-lime: #141512;
   --fail: #b5361b;
   --accent-ink: #4b6200;
-  --nav-mark: #8fb800; /* still lime, deep enough not to fade on the pale bar (Mihai 2026-11-10) */
+  --nav-mark: #8a8d81; /* light mode: grey, the same as --line-strong (Mihai 2026-11-10) */
   --cipher: #5a7400;
   --plain: #141512;
   --chart-cursor: rgb(20 21 18 / 0.05);
@@ -738,6 +738,47 @@ input[type="text"].type,
 .hero.is-loaded .hero-skeleton {
   opacity: 0;
   visibility: hidden;
+}
+/* a long load (after 4 s, SlowLoad.tsx): a card in the attack cards' language over the machine's placeholder,
+   with the site's thin bar and the number-with-label of .attempts, fed by the model's real download */
+.slow-load {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  font-style: normal; /* the skeleton's boxes are <i> elements */
+  animation: wait-in 500ms var(--ease-out) both;
+}
+.slow-card {
+  display: grid;
+  gap: var(--space-sm);
+  width: min(100%, 300px);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  background: var(--surface);
+  text-align: left;
+}
+.slow-title {
+  margin-bottom: var(--space-xs);
+  font: 800 clamp(1.75rem, 3vw, 2.5rem) / 0.95 var(--font-stencil);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.slow-card .bar > i {
+  transition: transform 300ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .slow-card .bar > i {
+    transition: none;
+  }
+}
+@keyframes wait-in {
+  from {
+    opacity: 0;
+  }
 }
 .sk {
   position: absolute;
@@ -3473,6 +3514,13 @@ textarea {
 .phone-only {
   display: none;
 }
+/* archive report, per message: 10 rows on wider screens, the rest behind "show all" (the button only when there is a rest) */
+.per-msg:not(.open) tbody tr:nth-child(n + 11) {
+  display: none;
+}
+.per-msg-more.few {
+  display: none;
+}
 @media (max-width: 767px) {
   .phone-only {
     display: block;
@@ -3483,5 +3531,8 @@ textarea {
   }
   .per-msg:not(.open) tbody tr:nth-child(n + 4) {
     display: none;
+  }
+  .per-msg-more.few {
+    display: block;
   }
 }

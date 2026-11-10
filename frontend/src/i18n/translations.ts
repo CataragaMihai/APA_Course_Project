@@ -23,6 +23,8 @@ const ro = {
   hero: {
     title: "Interceptează & Decodează",
     lede: "Aplicație web care sparge cifrul Vigenère cu trei algoritmi: forța brută, atacul cu dicționar și analiza de frecvență.",
+    loading: "Se încarcă",
+    downloaded: "descărcat",
     pause: "Pauză",
     resume: "Reia",
     replay: "Redă demonstrația",
@@ -287,6 +289,8 @@ const en: Messages = {
   hero: {
     title: "Intercept & Decode",
     lede: "A web app that breaks the Vigenère cipher with three algorithms: brute force, dictionary attack and frequency analysis.",
+    loading: "Loading",
+    downloaded: "downloaded",
     pause: "Pause",
     resume: "Resume",
     replay: "Play the demo",
@@ -549,6 +553,8 @@ const ru: Messages = {
   hero: {
     title: "Перехватывай & Расшифровывай",
     lede: "Веб-приложение, которое взламывает шифр Виженера тремя алгоритмами: перебором, атакой по словарю и частотным анализом.",
+    loading: "Загрузка",
+    downloaded: "загружено",
     pause: "Пауза",
     resume: "Продолжить",
     replay: "Смотреть демонстрацию",

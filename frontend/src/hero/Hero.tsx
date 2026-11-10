@@ -5,6 +5,7 @@ import Galaxy from "../components/Galaxy";
 import type { HeroMessage } from "./timeline";
 import type { HeroMode } from "./engine";
 import Icon from "../components/Icon";
+import SlowLoad from "./SlowLoad";
 
 const BASE = import.meta.env.BASE_URL;
 // start fetching the hero code at page load instead of after the messages arrive (three.js only where it is used)
@@ -57,6 +58,14 @@ export default function Hero() {
   useEffect(() => {
     void lifted.then(() => setLoaded(true));
   }, []);
+  // a long load (slow network): after 4 s a line on the skeleton says the page is still coming (Mihai 2026-11-10)
+  const [slow, setSlow] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null); // the model's download, for the slow-load strand
+  useEffect(() => {
+    if (loaded) return;
+    const id = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(id);
+  }, [loaded]);
 
   // the hero's code or messages failed: nothing will ever call onModel, so show the headline and copy instead of a skeleton forever
   const noHero = () => {
@@ -89,6 +98,8 @@ export default function Hero() {
         {
           onTitle: () => setTitled(true),
           onModel: () => modelIn(),
+          // re-render only when the whole percent changes
+          onProgress: (f) => setProgress((p) => (f === null ? null : p !== null && Math.floor(p * 100) === Math.floor(f * 100) ? p : f)),
           gate: lifted,
         },
       );
@@ -184,7 +195,7 @@ export default function Hero() {
       {/* loading skeleton (eCarnet's): mirrors this mode's layout, shimmers, fades out when the gate lifts */}
       <div className="hero-skeleton" aria-hidden="true">
         <i className="sk sk-title" />
-        <i className="sk sk-machine" />
+        <i className="sk sk-machine">{slow && !loaded && <SlowLoad text={t.hero.loading} label={t.hero.downloaded} progress={progress} lang={lang} />}</i>
         <span className="sk-copy">
           <i className="sk sk-line" />
           <i className="sk sk-line" />
@@ -192,6 +203,10 @@ export default function Hero() {
         </span>
         <i className="sk sk-btn" />
       </div>
+      {/* the skeleton is hidden from screen readers, so the same line is announced from here */}
+      <p className="sr-only" role="status">
+        {slow && !loaded ? t.hero.loading : ""}
+      </p>
       <Galaxy
         className="hero-galaxy"
         aria-hidden="true"

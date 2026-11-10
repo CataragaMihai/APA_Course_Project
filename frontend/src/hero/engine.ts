@@ -18,6 +18,7 @@ export interface HeroCallbacks {
   onCaption?: (index: number) => void;
   onTitle: () => void; // the machine is landing: reveal the H1
   onModel?: () => void; // the 3D is in (or failed): the page's loading skeleton may lift
+  onProgress?: (f: number | null) => void; // download progress of the 3D model, 0..1 (null: the size is unknown)
   /** Resolves when the skeleton has lifted, so the assembly plays in full view (eCarnet's load gate). */
   gate?: Promise<void>;
 }
@@ -502,7 +503,7 @@ export function startHero(el: HeroElements, mode: HeroMode, reduced: boolean, me
   // a running CSS animation beats an inline opacity, so the ghost's breathing has to stop too
   const vanish = (ph: HTMLElement | null) => ph && Object.assign(ph.style, { animation: "none", opacity: "0" });
   import("./scene")
-    .then(({ createScene }) => createScene(el.gl, glbUrl, size.w, size.h))
+    .then(({ createScene }) => createScene(el.gl, glbUrl, size.w, size.h, cb.onProgress))
     .then((s) => {
       if (disposed) return s.dispose();
       scene = s;

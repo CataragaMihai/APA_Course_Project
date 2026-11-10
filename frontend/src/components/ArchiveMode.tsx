@@ -294,7 +294,7 @@ export default function ArchiveMode({ maxKeyLength }: { maxKeyLength: number }) 
           <p className="hint">
             {format(t.archive.stdNote, { n: REPEATS })}
           </p>
-          {/* phones: the first rows, the rest behind "show all" (Mihai 2026-11-05) */}
+          {/* the first rows, the rest behind "show all": 3 on phones (Mihai 2026-11-05), 10 on wider screens (2026-11-10) */}
           <div className={`table-wrap per-msg ${allRows ? "open" : ""}`}>
           <table>
             <thead>
@@ -327,7 +327,7 @@ export default function ArchiveMode({ maxKeyLength }: { maxKeyLength: number }) 
           </table>
           </div>
           {messages.length > 3 && (
-            <div className="phone-only">
+            <div className={`per-msg-more ${messages.length <= 10 ? "few" : ""}`}>
               <button className="btn quiet small" type="button" aria-expanded={allRows} onClick={() => setAllRows(!allRows)}>
                 {allRows ? t.composer.showLess : t.composer.showAll}
               </button>
