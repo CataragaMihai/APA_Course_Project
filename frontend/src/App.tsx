@@ -10,7 +10,7 @@ import Decoded, { defaultPick } from "./components/Decoded";
 import Method from "./components/Method";
 import Team from "./components/Team";
 import SiteFooter from "./components/SiteFooter";
-import { fetchMessages, streamCrack } from "./api";
+import { fetchMessages, serverAwake, streamCrack } from "./api";
 import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 import { format } from "./i18n/translations";
 import { isCracked } from "./utils/verdict";
@@ -43,17 +43,15 @@ function Page() {
   const { t, lang } = useLanguage();
   const [messages, setMessages] = useState<MessageSummary[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
-  // a sleeping free-tier backend takes 20-60 s to answer: say so instead of leaving skeleton rows with no explanation
-  const [waking, setWaking] = useState(false);
-  useEffect(() => {
-    if (messages.length || loadError) return setWaking(false);
-    const id = setTimeout(() => setWaking(true), 4000);
-    return () => clearTimeout(id);
-  }, [messages.length, loadError]);
   const [selection, setSelection] = useState<Selection>(null);
   const [browsing, setBrowsing] = useState(false); // the full message list replaces the workspace
   const [mission, setMission] = useState<Mission | null>(null);
   const [states, setStates] = useState(initialStates);
+  // a sleeping free-tier backend takes 20-60 s to answer: if a run starts before it is up, say so
+  const [awake, setAwake] = useState(false);
+  useEffect(() => void serverAwake.then(() => setAwake(true)), []);
+  const running = ALGORITHMS.some((a) => states[a].status === "running");
+  const waking = running && !awake;
   const [maxKeyLength, setMaxKeyLength] = useState(4);
   // Ground truth for checking each verdict: the revealed archive key, or the key the user typed
   const [truth, setTruth] = useState<RevealResponse | null>(null);
@@ -236,7 +234,7 @@ function Page() {
                 onCustomEncrypted={customEncrypted}
                 maxKeyLength={maxKeyLength}
                 onMaxKeyLengthChange={setMaxKeyLength}
-                running={ALGORITHMS.some((a) => states[a].status === "running")}
+                running={running}
                 onRunAll={runAll}
               />
               <Stations states={states} maxKeyLength={maxKeyLength} disabled={!mission} onRun={runAlgorithm} shown={shown} onPick={setPicked} />

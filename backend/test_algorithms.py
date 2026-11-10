@@ -97,6 +97,18 @@ def test_wordlist_matches_dictionary_attack():
     assert r["recovered_key"] in words
 
 
+def test_frontend_archive_matches_api():
+    """The site ships the archive list (frontend/src/messages.json): it must equal GET /api/messages and hold no answers."""
+    from pathlib import Path
+    from app.main import list_messages
+    shipped = json.loads((Path(__file__).parent.parent / "frontend/src/messages.json").read_text(encoding="utf-8"))
+    assert shipped == [m.model_dump() for m in list_messages()], (
+        "stale copy; from backend/ run: venv/bin/python -c \"import json; from app.main import list_messages; "
+        "open('../frontend/src/messages.json','w').write(json.dumps([m.model_dump() for m in list_messages()], indent=1, ensure_ascii=False)+'\\n')\""
+    )
+    assert not any("key" in m or "plaintext" in m for m in shipped)
+
+
 def test_archive_replay_matches_first_run():
     """A second archive run is served from the cache: same events, flagged `cached`, and no recomputation."""
     from app.main import _ARCHIVE_CACHE, _archive_events_cached
@@ -136,6 +148,7 @@ if __name__ == "__main__":
     test_tiny_inputs_do_not_crash()
     test_stream_verdict_uses_true_key()
     test_wordlist_matches_dictionary_attack()
+    test_frontend_archive_matches_api()
     test_archive_replay_matches_first_run()
     test_simultaneous_first_runs_compute_once()
     print(f"OK: {len(MESSAGES)} messages x {len(ALGORITHMS)} algorithms")

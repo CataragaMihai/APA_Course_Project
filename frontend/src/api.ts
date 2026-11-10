@@ -8,6 +8,7 @@ import type {
   KeyLengthExperiment,
   TextLengthExperiment,
 } from "./types";
+import archive from "./messages.json";
 
 // Local dev: empty, and Vite proxies /api to :8000. Deployed (GitHub Pages):
 // set VITE_API_BASE at build time to the backend's public URL.
@@ -32,9 +33,17 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// The archive list ships with the site (no keys or plaintexts; test_algorithms.py checks it matches GET /api/messages),
+// so it shows at once even while the free-tier backend sleeps (20-60 s to wake).
 export function fetchMessages(): Promise<MessageSummary[]> {
-  return getJson<MessageSummary[]>("/messages");
+  return Promise.resolve(archive as MessageSummary[]);
 }
+
+/** Pinged on page load so a sleeping backend boots while the visitor watches the hero; resolves once it answers (or fails). */
+export const serverAwake: Promise<void> = fetch(`${BASE}/health`).then(
+  () => undefined,
+  () => undefined,
+);
 
 /** The dictionary attack's word list, in the order it tries the words. */
 export function fetchWordlist(): Promise<string[]> {
