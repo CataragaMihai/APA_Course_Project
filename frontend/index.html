@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0c0b" />
+    <script>
+      // theme before first paint (no flash): saved choice, else light (Mihai, 2026-11-03: light is the default)
+      var theme = "light";
+      try {
+        if (localStorage.getItem("theme") === "dark") theme = "dark";
+      } catch (e) {}
+      if (theme === "light") {
+        document.documentElement.dataset.theme = "light";
+        document.querySelector('meta[name="theme-color"]').content = "#f4f3ee";
+      }
+    </script>
+    <!-- tab icon (Mihai 2026-11-10): "I&D" in the headline's stencil face, black on lime; PNG because a tab icon cannot load web fonts -->
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="./favicon-48.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <meta name="description" content="Aplicație web de criptanaliză a cifrului Vigenère: forță brută, atac cu dicționar și analiză de frecvență, comparate în timp real." />
+    <!-- share cards need absolute URLs; they point at the public Pages site, so change them if the site moves -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ro_RO" />
+    <meta property="og:title" content="Intercept &amp; Decode · APA, echipa № 10" />
+    <meta property="og:description" content="Sparge cifrul Vigenère cu trei algoritmi și urmărește decodarea" />
+    <meta property="og:url" content="https://apa-course-project.onrender.com/" />
+    <meta property="og:image" content="https://apa-course-project.onrender.com/og-preview.jpg" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>html,body{background:#0b0c0b}html[data-theme=light],html[data-theme=light] body{background:#f4f3ee}</style>
+    <!-- hero model: download starts with the page on tablets and desktops (phones get the still; Hero.tsx pickMode) -->
+    <!-- the hero placeholder first (phone still / desktop ghost), so slow links show a machine at once -->
+    <link rel="preload" href="./hero/still-phone.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="./hero/apa-no-10.rig.min.glb" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="./hero/hero-messages.json" as="fetch" crossorigin="anonymous" />
+    <title>Intercept &amp; Decode · APA, echipa № 10</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
